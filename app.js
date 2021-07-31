@@ -1,5 +1,7 @@
-const meals = document.getElementById('meals');
+const mealsEl = document.getElementById('meals');
 const favoriteContainer = document.getElementById('fav-meals');
+const searchTerm= document.getElementById('search-term');
+const search= document.getElementById('search');
 
 getRandomMeal();
 fetchFavMeal();
@@ -18,14 +20,18 @@ async function getMealById(id) {
     const resp = await fetch('https://www.themealdb.com/api/json/v1/1/lookup.php?i=' + id);
 
     const respData = await resp.json();
-
     const meal = respData.meals[0];
 
     return meal;
 }
 
 async function getMealsBySearch(term) {
-    const meals = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=' + term);
+    const resp = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=' + term);
+
+    const respData = await resp.json();
+    const meals = respData.meals;
+
+    return meals;
 }
 
 function addMeal(mealData, random = false) {
@@ -55,8 +61,6 @@ function addMeal(mealData, random = false) {
             btn.classList.add('active');
         }
 
-        //CLEAN THE CONTAINER
-        favoriteContainer.innerHTML = " ";
         fetchFavMeal();
     });
 
@@ -102,7 +106,32 @@ function addMealFav(mealData) {
     favMeal.innerHTML = `
         <img src="${mealData.strMealThumb}" alt="${mealData.strMeal}">
         <span> ${mealData.strMeal} </span>
+        <button class="clear"><i class="fas fa-window-close"></i></button>
     `;
+
+    const btn = favMeal.querySelector('.clear');
+
+    btn.addEventListener('click', () => {
+        removeMealLS(mealData.idMeal);
+
+        fetchFavMeal();
+    });
 
     favoriteContainer.appendChild(favMeal);
 }
+
+search.addEventListener('click', async () => {
+    // CLEAN CONTAINER
+    mealsEl.innerHTML = " ";
+
+    const search = searchTerm.value;
+
+    const meals = await getMealsBySearch(search);
+
+    if(meals){
+        meals.forEach((meal) => {
+            addMeal(meal);
+        });
+    }
+});
+
