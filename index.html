@@ -6,9 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe App</title>
     <link href="./style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
     <h1> Recipe App </h1>
+    <div class="container">
+        <header>
+            <div class="btn-container">
+                <input type="text">
+                <button id="search">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </header>
+        <div class="fav-container">
+            <h3>Favorite Meals</h3>
+            <ul class="fav-meals" id="fav-meals">
+            </ul>
+        </div>
+        <div class="meals" id="meals">
+        </div>
+    </div>
 
     <script src="./app.js" text="text/javascript"></script>
 </body>
