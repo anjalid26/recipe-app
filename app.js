@@ -1,7 +1,10 @@
 const mealsEl = document.getElementById('meals');
 const favoriteContainer = document.getElementById('fav-meals');
 const searchTerm= document.getElementById('search-term');
-const search= document.getElementById('search');
+const searchBtn= document.getElementById('search');
+const mealInfoEl = document.getElementById('meal-info')
+const mealPopup = document.getElementById('meal-popup');
+const popupCloseBtn = document.getElementById('close-popup');
 
 getRandomMeal();
 fetchFavMeal();
@@ -10,9 +13,7 @@ async function getRandomMeal() {
     const resp = await fetch('https://www.themealdb.com/api/json/v1/1/random.php');
     const respData = await resp.json();
     const randomMeal = respData.meals[0];
-
-    console.log(randomMeal);
-
+    
     addMeal(randomMeal, true);
 }
 
@@ -64,7 +65,10 @@ function addMeal(mealData, random = false) {
         fetchFavMeal();
     });
 
-    meals.appendChild(meal);
+    meal.addEventListener('click', () => {
+        showMealInfo(mealData);
+    });
+    mealsEl.appendChild(meal);
 }
 
 function addMealLS(mealId) {
@@ -76,7 +80,7 @@ function addMealLS(mealId) {
 function removeMealLS(mealId) {
     const mealIds = getMealLS();
 
-    localStorage.setItem('mealIds', JSON.stringify(mealIds.filter(id => id !== mealId)));
+    localStorage.setItem('mealIds', JSON.stringify(mealIds.filter((id) => id !== mealId)));
 }
 
 function getMealLS() {
@@ -117,10 +121,48 @@ function addMealFav(mealData) {
         fetchFavMeal();
     });
 
+    favMeal.addEventListener('click', () => {
+        showMealInfo(mealData);
+    });
+
     favoriteContainer.appendChild(favMeal);
 }
 
-search.addEventListener('click', async () => {
+function showMealInfo(mealData) {
+    // CLEAN IT UP
+    mealInfoEl.innerHTML = " ";
+
+    // UPDATE MEAL INFO
+    const mealEl = document.createElement('div');
+
+    // GET INGREDIENTS 
+    const ingredients = [];
+    for(let i = 1; i <= 20; i++) {
+        if(mealData['strIngredient' + i]) {
+            ingredients.push(`${mealData['strIngredient' + i]} - ${mealData['strMeasure' + i]}`);
+        } else {
+            break;
+        }
+    }
+
+    mealEl.innerHTML = `
+        <h1>${mealData.strMeal}</h1>
+        <img src="${mealData.strMealThumb}" alt="${mealData.strMeal}">
+        <p>
+            ${mealData.strInstructions}
+        </p>
+        <h3> Ingredients </h3>
+        <ul>
+            ${ingredients.map((ing) => `<li>${ing}</li>`).join('')}
+        </ul>
+    `;
+
+    mealInfoEl.appendChild(mealEl);
+    // SHOW THE POPUP
+    mealPopup.classList.remove('hidden');
+}
+
+searchBtn.addEventListener('click', async () => {
     // CLEAN CONTAINER
     mealsEl.innerHTML = " ";
 
@@ -135,3 +177,6 @@ search.addEventListener('click', async () => {
     }
 });
 
+popupCloseBtn.addEventListener('click', () => {
+    mealPopup.classList.add('hidden');
+});
